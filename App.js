@@ -1,16 +1,25 @@
-import * as React from 'react';
+import React, { useState, createContext, useContext, useMemo } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+// -- Authentication Context --
+// create context and hook to access it
+const AuthContext = createContext();
+
+const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
 // -- Components -- 
-// stack navigator for app navigation 
 const Stack = createStackNavigator(); 
 
 // --- Main screens ---
-// Tab Navigator is the main screen 
-// it will have 4 tabs, Home, Feed, Catalog, and Account
 const Tab = createBottomTabNavigator();
 const MainNavigator = () => {
   return (
@@ -49,59 +58,91 @@ const CatalogScreen = () => {
 };
 // AccountScreen
 const AccountScreen = () => {
+  const { signOut } = useAuth(); // access the signOut function from the AuthContext
+
   return (
     <View style={styles.layout}>
       <Text style={styles.title}>Account Screen</Text>
+      <Button 
+      onPress={() => signOut()} 
+      title={'Sign Out'} 
+      color="red"
+      /> 
     </View>
   );
 };
 
-
 // --- Onboarding screens ---
-// when pushing button on sign in screen, move to sign up screen 
-// when pushing button on sign up screen, move to sign in screen 
 const SignInScreen = () => {
   const navigation = useNavigation();
+  const { signIn } = useAuth();
+  
   return (
   <View style={styles.layout}>
     <Text style={styles.title}>Sign In Screen</Text>
-    <Button onPress={() => navigation.navigate('SignUp')} title={'Sign Up Instead'} />
-    <Button onPress={() => navigation.navigate('Main')} title={'Go to Main App (for testing)'} />
+    <Button onPress={() => navigation.navigate('SignUp')} title={'Sign Up?'} />
+    <Button onPress={() => signIn()} title={'Sign In'} />
   </View> 
   ); 
 }; 
+
 const SignUpScreen = () => {
   const navigation = useNavigation();
   return (
   <View style={styles.layout}>
     <Text style={styles.title}>Sign Up Screen</Text>
-    <Button onPress={() => navigation.navigate('SignIn')} title={'Sign In Instead'} /> 
+    <Button onPress={() => navigation.navigate('SignIn')} title={'Sign In?'} /> 
   </View>
   ); 
 }; 
 
-// Authentication flow 
-// boolean for signed in
-let isSignedIn = false; 
-
 // --- App ---
+const App = () => {
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
-const App = () => (
-    <NavigationContainer>
-      {/* App navigation structure goes here */}
-      <Stack.Navigator headerMode='none' initialRouteName='SignIn'>
-        {isSignedIn ? (
-          <Stack.Screen name="Main" component={MainNavigator}></Stack.Screen>
-        ) : (
-          <Stack.Screen name="SignIn" component={SignInScreen} options={{title: "Sign In"}}></Stack.Screen>
-        )}
-        <Stack.Screen 
-        component={SignUpScreen} 
-        name="SignUp" 
-        options={{title:"Sign Up"}}></Stack.Screen>
-      </Stack.Navigator>
-    </NavigationContainer>
-);
+  const signIn = () => {
+    setIsSignedIn(true);
+  };
+
+  const signOut = () => {
+    setIsSignedIn(false);
+  };
+
+ // optimized for performance - oply recreates when isSignedIn changes
+ const authValue = useMemo(() => ({
+  signIn,
+  signOut,
+  isSignedIn,
+ }), [isSignedIn]); 
+
+  return (
+    <AuthContext.Provider value={authValue}>
+      <NavigationContainer>
+        <Stack.Navigator 
+          screenOptions={{headerShown: false}} 
+          initialRouteName='SignIn'
+        >
+          {isSignedIn ? (
+            <Stack.Screen name="Main" component={MainNavigator} />
+          ) : (
+            <>
+              <Stack.Screen 
+                name="SignIn" 
+                component={SignInScreen}
+                options={{title: "Sign In"}}
+              />
+              <Stack.Screen 
+                component={SignUpScreen} 
+                name="SignUp" 
+                options={{title:"Sign Up"}}
+              />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthContext.Provider>
+  );
+};
 
 export default App;
 
