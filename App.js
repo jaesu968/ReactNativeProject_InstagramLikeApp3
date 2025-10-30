@@ -1,14 +1,37 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+// -- Components -- 
+const Stack = createStackNavigator(); 
 
 // --- Main screens ---
 
 // --- Onboarding screens ---
+const signInScreen = () => {
+  return null; 
+}
+const signUpScreen = () => {
+  return null;
+}
 
 // --- App ---
 
 const App = () => (
-  null
+    <NavigationContainer>
+      {/* App navigation structure goes here */}
+      <Stack.Navigator>
+        <Stack.Screen 
+        component={signInScreen} 
+        name="SignIn" 
+        options={{title: "Sign In"}}></Stack.Screen>
+        <Stack.Screen 
+        component={signUpScreen} 
+        name="SignUp" 
+        options={{title:"Sign Up"}}></Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
 );
 
 export default App;
