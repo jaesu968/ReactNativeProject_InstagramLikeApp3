@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -9,12 +9,20 @@ const Stack = createStackNavigator();
 // --- Main screens ---
 
 // --- Onboarding screens ---
-const signInScreen = () => {
-  return null; 
-}
-const signUpScreen = () => {
-  return null;
-}
+const SignInScreen = () => {
+  return (
+  <View style={styles.layout}>
+    <Text style={styles.title}>Sign In Screen</Text>
+  </View> 
+  ); 
+}; 
+const SignUpScreen = () => {
+  return (
+  <View style={styles.layout}>
+    <Text style={styles.title}>Sign Up Screen</Text>
+  </View>
+  ); 
+}; 
 
 // --- App ---
 
@@ -23,11 +31,11 @@ const App = () => (
       {/* App navigation structure goes here */}
       <Stack.Navigator>
         <Stack.Screen 
-        component={signInScreen} 
+        component={SignInScreen} 
         name="SignIn" 
         options={{title: "Sign In"}}></Stack.Screen>
         <Stack.Screen 
-        component={signUpScreen} 
+        component={SignUpScreen} 
         name="SignUp" 
         options={{title:"Sign Up"}}></Stack.Screen>
       </Stack.Navigator>
