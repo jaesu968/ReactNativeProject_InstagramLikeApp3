@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { StyleSheet, Text, View, Button } from 'react-native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 // -- Components -- 
@@ -9,17 +9,23 @@ const Stack = createStackNavigator();
 // --- Main screens ---
 
 // --- Onboarding screens ---
+// when pushing button on sign in screen, move to sign up screen 
+// when pushing button on sign up screen, move to sign in screen 
 const SignInScreen = () => {
+  const navigation = useNavigation();
   return (
   <View style={styles.layout}>
     <Text style={styles.title}>Sign In Screen</Text>
+    <Button onPress={() => navigation.navigate('SignUp')} title={'Sign Up Instead'} /> 
   </View> 
   ); 
 }; 
 const SignUpScreen = () => {
+  const navigation = useNavigation();
   return (
   <View style={styles.layout}>
     <Text style={styles.title}>Sign Up Screen</Text>
+    <Button onPress={() => navigation.navigate('SignIn')} title={'Sign In Instead'} /> 
   </View>
   ); 
 }; 
